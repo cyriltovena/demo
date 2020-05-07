@@ -5,7 +5,7 @@ networks:
 
 services:
   loki:
-    image: ctovena/loki:logql-regexp-82298f6
+    image: grafana/loki:logql-regexp-0eb66ca-WIP3
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -29,6 +29,7 @@ services:
     image: grafana/grafana-enterprise-dev:master-cd0c4dbc-fb5f-4f85-9a42-a6c0ead7ca96
     volumes:
       - ./provisioning:/etc/grafana/provisioning
+      - ./provisioning/dashboards/:/var/lib/grafana/dashboards/
     ports:
       - "3000:3000"
     networks:
@@ -36,16 +37,31 @@ services:
 
   hey1:
     image: ricoli/hey
-    command: -m HEAD -z 7200h -c 5 -q 12 http://nginx/foo
+    command: -m GET -z 7200h -c 1 -q 0.5 http://nginx/foo.html
     networks:
       - loki
   hey2:
     image: ricoli/hey
-    command: -m GET -z 7200h -c 5 -q 5 http://nginx/bar/buzz
+    command: -m HEAD -z 7200h -c 1 -q 0.2 http://nginx/loki.jpeg
     networks:
       - loki
   hey3:
     image: ricoli/hey
-    command: -m POST -z 7200h -c 5 -q 8 http://nginx/blip/bloop
+    command: -m GET -z 7200h -c 1 -q 0.2 http://nginx/loki.jpeg
+    networks:
+      - loki
+  hey4:
+    image: ricoli/hey
+    command: -m GET -z 7200h -c 1 -q 0.1 http://nginx/bar.html
+    networks:
+      - loki
+  hey5:
+    image: ricoli/hey
+    command: -m POST -z 7200h -c 1 -q 0.1 http://nginx/buzz.html
+    networks:
+      - loki
+  hey6:
+    image: ricoli/hey
+    command: -m GET -z 7200h -c 1 -q 0.1 http://nginx/buzz.html
     networks:
       - loki

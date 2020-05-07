@@ -23,3 +23,22 @@ sum by (path,method)
   [1m])
  )
 ```
+
+
+```logql
+{compose_service="nginx"}
+| regexp
+"\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) (?P<value>\\d{1,})"
+```
+
+```logql
+max by (path)
+  (
+    avg_over_time(
+    {compose_service="nginx"}
+    | regexp
+    "\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) (?P<value>\\d{1,})"
+    [1m]
+  )
+) / 1000
+```
