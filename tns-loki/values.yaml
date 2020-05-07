@@ -1,0 +1,61 @@
+grafana:
+  enabled: true
+  image:
+    tag: 6.7.2
+  service:
+    type: LoadBalancer
+    port: 3000
+  adminPassword: admin
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: "ALL"
+
+prometheus:
+  enabled: true
+  extraScrapeConfigs: |
+    - job_name: kubernetes-pods-app
+      scrape_interval: 15s
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - action: drop
+        regex: .+
+        source_labels:
+        - __meta_kubernetes_pod_label_name
+      - source_labels:
+        - __meta_kubernetes_pod_label_app
+        target_label: __service__
+      - action: drop
+        regex: ''
+        source_labels:
+        - __service__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - action: replace
+        replacement: $1
+        separator: /
+        source_labels:
+        - __meta_kubernetes_namespace
+        - __service__
+        target_label: job
+      - action: replace
+        source_labels:
+        - __meta_kubernetes_namespace
+        target_label: namespace
+      - action: replace
+        source_labels:
+        - __meta_kubernetes_pod_name
+        target_label: instance
+      - action: replace
+        source_labels:
+        - __meta_kubernetes_pod_container_name
+        target_label: container_name
+
+loki:
+  image:
+    repository: ctovena/loki
+    tag: logql-regexp-2629e9a-WIP
+  persistence:
+    enabled: true
+    size: 20Gi

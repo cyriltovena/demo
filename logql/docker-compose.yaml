@@ -1,0 +1,51 @@
+version: "3"
+
+networks:
+  loki:
+
+services:
+  loki:
+    image: ctovena/loki:logql-regexp-2629e9a-WIP
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+
+  nginx:
+    image: nginx:stable
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/usr/share/nginx/html
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana-enterprise-dev:master-cd0c4dbc-fb5f-4f85-9a42-a6c0ead7ca96
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    networks:
+      - loki
+
+  hey1:
+    image: ricoli/hey
+    command: -m HEAD -z 7200h -c 5 -q 12 http://nginx/foo
+    networks:
+      - loki
+  hey2:
+    image: ricoli/hey
+    command: -m GET -z 7200h -c 5 -q 5 http://nginx/bar/buzz
+    networks:
+      - loki
+  hey3:
+    image: ricoli/hey
+    command: -m POST -z 7200h -c 5 -q 8 http://nginx/blip/bloop
+    networks:
+      - loki
