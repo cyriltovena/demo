@@ -5,7 +5,7 @@ networks:
 
 services:
   loki:
-    image: ctovena/loki:logql-regexp-2629e9a-WIP
+    image: ctovena/loki:logql-regexp-82298f6
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
