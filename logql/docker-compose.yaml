@@ -21,6 +21,7 @@ services:
     ports:
       - "8080:80"
     volumes:
+      - ./conf.d/:/etc/nginx/conf.d/
       - ./www:/usr/share/nginx/html
     networks:
       - loki
@@ -37,31 +38,31 @@ services:
 
   hey1:
     image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 0.5 http://nginx/foo.html
+    command: -m GET -z 7200h -c 1 -q 2 http://nginx/foo.html
     networks:
       - loki
   hey2:
     image: ricoli/hey
-    command: -m HEAD -z 7200h -c 1 -q 0.2 http://nginx/loki.jpeg
+    command: -m PUT -z 7200h -c 1 -q 2 http://nginx/500.html
     networks:
       - loki
   hey3:
     image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 0.2 http://nginx/loki.jpeg
+    command: -m GET -z 7200h -c 1 -q 4 http://nginx/loki.jpeg
     networks:
       - loki
   hey4:
     image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 0.1 http://nginx/bar.html
+    command: -m GET -z 7200h -c 1 -q 10 http://nginx/bar.html
     networks:
       - loki
   hey5:
     image: ricoli/hey
-    command: -m POST -z 7200h -c 1 -q 0.1 http://nginx/buzz.html
+    command: -m POST -z 7200h -c 1 -q 2 http://nginx/buzz.html
     networks:
       - loki
   hey6:
     image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 0.1 http://nginx/buzz.html
+    command: -m GET -z 7200h -c 1 -q 4 http://nginx/buzz.html
     networks:
       - loki

@@ -1,8 +1,12 @@
 # LogQL v2 demo
 
-## Install the loki docker-driver
+## Install the Loki docker-driver
 
+This demo uses the Loki driver plugin to ship logs you need to install it first using :
+
+```bash
 docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+```
 
 ## Run
 
@@ -23,7 +27,6 @@ sum by (path,method)
   [1m])
  )
 ```
-
 
 ```logql
 {compose_service="nginx"}
