@@ -42,3 +42,13 @@ max by (path)
   )
 ) / 1000
 ```
+
+
+```logql
+quantile_over_time(0.9,
+ {compose_service="nginx"}| regexp
+    "\"\\w+ .* HTTP\\/\\d\\.\\d\" \\d{3} (?P<value>\\d{1,})"
+    [1m]
+  )
+/ 1000
+```

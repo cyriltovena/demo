@@ -15,7 +15,7 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 1,
+    "id": 2,
     "links": [],
     "panels": [
         {
@@ -205,8 +205,109 @@
                 "align": false,
                 "alignLevel": null
             }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Loki-Prom",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {}
+                },
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 9
+            },
+            "hiddenSeries": false,
+            "id": 5,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "dataLinks": []
+            },
+            "percentage": false,
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "expr": "quantile_over_time(0.99,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} (?P<value>\\\\d{1,})\"\n    [1m]\n  )\n/ 1000",
+                    "interval": "",
+                    "legendFormat": "p99",
+                    "refId": "A"
+                },
+                {
+                    "expr": "quantile_over_time(0.50,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} (?P<value>\\\\d{1,})\"\n    [1m]\n  )\n/ 1000",
+                    "interval": "",
+                    "legendFormat": "p50",
+                    "refId": "B"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "Latency quantile",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
         }
     ],
+    "refresh": "5s",
     "schemaVersion": 25,
     "style": "dark",
     "tags": [],
