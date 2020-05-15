@@ -25,7 +25,7 @@
           "custom": {},
           "mappings": [],
           "thresholds": {
-            "mode": "absolute",
+            "mode": "percentage",
             "steps": [
               {
                 "color": "green",
@@ -33,10 +33,11 @@
               },
               {
                 "color": "red",
-                "value": 8
+                "value": 50
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
@@ -305,7 +306,7 @@
             "query": {
               "params": [
                 "A",
-                "5m",
+                "1m",
                 "now"
               ]
             },
@@ -317,8 +318,8 @@
           }
         ],
         "executionErrorState": "alerting",
-        "for": "1m",
-        "frequency": "1m",
+        "for": "30s",
+        "frequency": "15s",
         "handler": 1,
         "name": "Latency alert",
         "noDataState": "no_data",
@@ -374,19 +375,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "quantile_over_time(0.99,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [$__interval]\n  )",
+          "expr": "quantile_over_time(0.99,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [15s]\n  )",
           "interval": "",
           "legendFormat": "p99",
           "refId": "A"
         },
         {
-          "expr": "quantile_over_time(0.50,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [1m]\n  )",
+          "expr": "quantile_over_time(0.50,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [15s]\n  )",
           "interval": "",
           "legendFormat": "p50 ",
           "refId": "B"
         },
         {
-          "expr": "avg by (path)\n  (\n    avg_over_time(\n    {compose_service=\"nginx\"}\n    | regexp\n    \"\\\"(?P<method>\\\\w+ )(?P<path>.*) HTTP\\\\/\\\\d\\\\.\\\\d\\\" (?P<status_code>\\\\d{3}) \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [1m]\n  )\n)",
+          "expr": "avg by (path)\n  (\n    avg_over_time(\n    {compose_service=\"nginx\"}\n    | regexp\n    \"\\\"(?P<method>\\\\w+ )(?P<path>.*) HTTP\\\\/\\\\d\\\\.\\\\d\\\" (?P<status_code>\\\\d{3}) \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [15s]\n  )\n)",
           "interval": "",
           "legendFormat": "avg {{path}}",
           "refId": "C"
@@ -398,8 +399,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 1.7,
-          "yaxis": "left"
+          "value": 1.7
         }
       ],
       "timeFrom": null,
@@ -502,5 +502,5 @@
   "timezone": "",
   "title": "Nginx - Loki",
   "uid": "Tnn15XeWk",
-  "version": 12
+  "version": 4
 }
