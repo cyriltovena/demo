@@ -21,8 +21,28 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./conf.d/:/etc/nginx/conf.d/
+      - ./conf.d/nginx.conf:/etc/nginx/nginx.conf
       - ./www:/usr/share/nginx/html
+    networks:
+      - loki
+
+  backend:
+    build: ./backend/
+    ports:
+    - "5001:8080"
+    networks:
+      - loki
+
+  client1:
+    build: ./client/
+    networks:
+      - loki
+  client2:
+    build: ./client/
+    networks:
+      - loki
+  client3:
+    build: ./client/
     networks:
       - loki
 
@@ -33,36 +53,5 @@ services:
       - ./provisioning/dashboards/:/var/lib/grafana/dashboards/
     ports:
       - "3000:3000"
-    networks:
-      - loki
-
-  hey1:
-    image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 2 http://nginx/foo.html
-    networks:
-      - loki
-  hey2:
-    image: ricoli/hey
-    command: -m PUT -z 7200h -c 1 -q 2 http://nginx/500.html
-    networks:
-      - loki
-  hey3:
-    image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 4 http://nginx/loki.jpeg
-    networks:
-      - loki
-  hey4:
-    image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 10 http://nginx/bar.html
-    networks:
-      - loki
-  hey5:
-    image: ricoli/hey
-    command: -m POST -z 7200h -c 1 -q 2 http://nginx/buzz.html
-    networks:
-      - loki
-  hey6:
-    image: ricoli/hey
-    command: -m GET -z 7200h -c 1 -q 4 http://nginx/buzz.html
     networks:
       - loki

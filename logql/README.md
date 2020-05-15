@@ -30,8 +30,8 @@ sum by (path,method)
 
 ```logql
 {compose_service="nginx"}
-| regexp
-"\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) (?P<value>\\d{1,})"
+    | regexp
+    "\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) \\d{1,} (?P<value>\\d{1,}.\\d{1,})"
 ```
 
 ```logql
@@ -49,8 +49,8 @@ max by (path)
 
 ```logql
 quantile_over_time(0.9,
- {compose_service="nginx"}| regexp
-    "\"\\w+ .* HTTP\\/\\d\\.\\d\" \\d{3} (?P<value>\\d{1,})"
+  {compose_service="nginx"}| regexp
+    "\"\\w+ .* HTTP\\/\\d\\.\\d\" \\d{3} \\d{1,} (?P<value>\\d{1,}.\\d{1,})"
     [1m]
   )
 / 1000
