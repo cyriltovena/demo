@@ -20,7 +20,7 @@ open http://localhost:3000
 Queries to try
 
 ```logql
-sum by (path,method)
+sum by (method,path)
 (
   rate({compose_service="nginx"}
     | regexp "\"(?P<method>\\w+ )(?P<path>.*) HTTP"
@@ -40,18 +40,16 @@ max by (path)
     avg_over_time(
     {compose_service="nginx"}
     | regexp
-    "\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) (?P<value>\\d{1,})"
-    [1m]
+   "\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) \\d{1,} (?P<value>\\d{1,}.\\d{1,})"    [1m]
   )
-) / 1000
+)
 ```
 
 
 ```logql
-quantile_over_time(0.9,
+quantile_over_time(0.99,
   {compose_service="nginx"}| regexp
     "\"\\w+ .* HTTP\\/\\d\\.\\d\" \\d{3} \\d{1,} (?P<value>\\d{1,}.\\d{1,})"
     [1m]
   )
-/ 1000
 ```
