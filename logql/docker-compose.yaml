@@ -29,7 +29,7 @@ services:
   backend:
     build: ./backend/
     ports:
-    - "5001:8080"
+      - "5001:8080"
     networks:
       - loki
 
@@ -47,7 +47,7 @@ services:
       - loki
 
   grafana:
-    image: grafana/grafana-enterprise-dev:master-cd0c4dbc-fb5f-4f85-9a42-a6c0ead7ca96
+    image: grafana/grafana:7.0.0
     volumes:
       - ./provisioning:/etc/grafana/provisioning
       - ./provisioning/dashboards/:/var/lib/grafana/dashboards/
