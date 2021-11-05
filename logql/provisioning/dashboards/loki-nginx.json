@@ -8,21 +8,28 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "datasource": "Loki-Prom",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -55,18 +62,16 @@
           "calcs": [
             "last"
           ],
+          "fields": "",
           "values": false
         },
-        "showUnfilled": false
+        "showUnfilled": false,
+        "text": {}
       },
-      "pluginVersion": "7.1.0-cd0c4dbcpre",
+      "pluginVersion": "8.2.3",
       "targets": [
         {
-          "expr": "\nsum by (upstream)\n  (\n    rate(\n{compose_service=\"nginx\"} | regexp \"(?P<upstream>[\\\\w.]+) - - .*HTTP.*? (?P<status_code>\\\\d+)\"[$__interval]\n  )\n)",
-          "format": "time_series",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{upstream}}",
+          "expr": "sum by (ip)\n  (\n    rate(\n    {compose_service=\"nginx\"}\n    | pattern `<ip> - - [<_>] \"<method> <path> HTTP<_>\" <status> <_> <latency> ` | method != \"\"\n    [$__interval]\n  )\n)",
           "refId": "A"
         }
       ],
@@ -76,11 +81,12 @@
       "type": "bargauge"
     },
     {
-      "datasource": "Loki-Prom",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "percentage",
             "steps": [
@@ -100,7 +106,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 6,
+        "w": 4,
         "x": 12,
         "y": 0
       },
@@ -111,17 +117,17 @@
           "calcs": [
             "last"
           ],
+          "fields": "",
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "pluginVersion": "7.1.0-cd0c4dbcpre",
+      "pluginVersion": "8.2.3",
       "targets": [
         {
           "expr": "1 - (\n  sum(count_over_time({compose_service=\"nginx\"} |~ \" 20. \"[$__interval])) /        sum(count_over_time({compose_service=\"nginx\"}[$__interval]))\n)",
-          "interval": "",
-          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -131,11 +137,10 @@
       "type": "gauge"
     },
     {
-      "datasource": "Loki-Prom",
+      "datasource": null,
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -152,8 +157,8 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 6,
-        "x": 18,
+        "w": 4,
+        "x": 16,
         "y": 0
       },
       "id": 10,
@@ -166,15 +171,16 @@
           "calcs": [
             "last"
           ],
+          "fields": "",
           "values": false
-        }
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "7.1.0-cd0c4dbcpre",
+      "pluginVersion": "8.2.3",
       "targets": [
         {
           "expr": "       sum(rate({compose_service=\"nginx\"}[$__interval]))",
-          "interval": "",
-          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -184,14 +190,73 @@
       "type": "stat"
     },
     {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "expr": "100 - sum(count_over_time({compose_project=\"logql\"} \n  | pattern `<ip> - - [<_>] \"<method> <path> HTTP<_>\" <status> <_> <latency> `\n  | status >= 500 or latency > 10 [$__range]))\n  \n  / \n  sum(count_over_time({compose_project=\"logql\"} \n  | pattern `<ip> - - [<_>] \"<method> <path> HTTP<_>\" <status> <_> <latency> `\n [$__range])) * 100",
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "SLO (200 and < 10s)",
+      "type": "stat"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Loki-Prom",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "links": []
         },
         "overrides": []
       },
@@ -218,9 +283,10 @@
       "linewidth": 1,
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.2.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -243,9 +309,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (path,status_code)\n  (\n    rate(\n    {compose_service=\"nginx\"}\n    | regexp\n    \"\\\"(?P<method>\\\\w+ )(?P<path>.*) HTTP\\\\/\\\\d\\\\.\\\\d\\\" (?P<status_code>\\\\d{3})\"\n    [$__interval]\n  )\n)",
-          "interval": "",
-          "legendFormat": "{{status_code}} - {{path}}",
+          "expr": "sum by (path,status)\n  (\n    rate(\n    {compose_service=\"nginx\"}\n    | pattern `<ip> - - [<_>] \"<method> <path> HTTP<_>\" <status> <_> <latency> `\n    [1m]\n  )\n)",
           "refId": "A"
         }
       ],
@@ -331,10 +395,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Loki-Prom",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "links": []
         },
         "overrides": []
       },
@@ -365,9 +429,10 @@
       "linewidth": 1,
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.2.3",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -377,22 +442,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "quantile_over_time(0.99,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [15s]\n  )",
-          "interval": "",
-          "legendFormat": "p99",
+          "expr": "quantile_over_time(0.99,{compose_project=\"logql\"} \n  | pattern `<ip> - - [<_>] \"<method> <path> HTTP<_>\" <status> <_> <latency> ` | latency != \"\" | unwrap latency [$__interval]) by (compose_project)",
           "refId": "A"
-        },
-        {
-          "expr": "quantile_over_time(0.50,\n {compose_service=\"nginx\"}| regexp\n    \"\\\"\\\\w+ .* HTTP\\\\/\\\\d\\\\.\\\\d\\\" \\\\d{3} \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [15s]\n  )",
-          "interval": "",
-          "legendFormat": "p50 ",
-          "refId": "B"
-        },
-        {
-          "expr": "avg by (path)\n  (\n    avg_over_time(\n    {compose_service=\"nginx\"}\n    | regexp\n    \"\\\"(?P<method>\\\\w+ )(?P<path>.*) HTTP\\\\/\\\\d\\\\.\\\\d\\\" (?P<status_code>\\\\d{3}) \\\\d{1,} (?P<value>\\\\d{1,}.\\\\d{1,})\"\n    [15s]\n  )\n)",
-          "interval": "",
-          "legendFormat": "avg {{path}}",
-          "refId": "C"
         }
       ],
       "thresholds": [
@@ -401,7 +452,8 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 1.7
+          "value": 1.7,
+          "visible": true
         }
       ],
       "timeFrom": null,
@@ -446,12 +498,6 @@
     },
     {
       "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 6,
         "w": 24,
@@ -460,6 +506,10 @@
       },
       "id": 7,
       "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
         "showLabels": false,
         "showTime": false,
         "sortOrder": "Descending",
@@ -477,15 +527,15 @@
       "type": "logs"
     }
   ],
-  "refresh": "5s",
-  "schemaVersion": 25,
+  "refresh": "",
+  "schemaVersion": 31,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -504,5 +554,5 @@
   "timezone": "",
   "title": "Nginx - Loki",
   "uid": "Tnn15XeWk",
-  "version": 6
+  "version": 10
 }

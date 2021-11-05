@@ -5,7 +5,7 @@ networks:
 
 services:
   loki:
-    image: ctovena/loki:logql-regexp-4becbc2
+    image: grafana/loki:main-678495a
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -47,7 +47,7 @@ services:
       - loki
 
   grafana:
-    image: grafana/grafana:7.0.0
+    image: grafana/grafana-enterprise:8.2.3
     volumes:
       - ./provisioning:/etc/grafana/provisioning
       - ./provisioning/dashboards/:/var/lib/grafana/dashboards/

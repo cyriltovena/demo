@@ -12,11 +12,3 @@ datasources:
     isDefault: true
     version: 1
     editable: false
-  - name: Loki-Prom
-    type: prometheus
-    access: proxy
-    url: http://loki:3100/loki
-    orgId: 1
-    isDefault: false
-    version: 1
-    editable: false

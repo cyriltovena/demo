@@ -22,34 +22,18 @@ Queries to try
 ```logql
 sum by (method,path)
 (
-  rate({compose_service="nginx"}
-    | regexp "\"(?P<method>\\w+ )(?P<path>.*) HTTP"
+  rate({compose_project="logql"}
+  | pattern `<ip> - - [<_>] "<method> <path> HTTP<_>" <status> <_> <latency> `
   [1m])
  )
 ```
 
 ```logql
-{compose_service="nginx"}
-    | regexp
-    "\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) \\d{1,} (?P<value>\\d{1,}.\\d{1,})"
+{compose_project="logql"}
+  | pattern `<ip> - - [<_>] "<method> <path> HTTP<_>" <status> <_> <latency> `
 ```
 
 ```logql
-max by (path)
-  (
-    avg_over_time(
-    {compose_service="nginx"}
-    | regexp
-   "\"(?P<method>\\w+ )(?P<path>.*) HTTP\\/\\d\\.\\d\" (?P<status_code>\\d{3}) \\d{1,} (?P<value>\\d{1,}.\\d{1,})"    [1m]
-  )
-)
-```
-
-
-```logql
-quantile_over_time(0.99,
-  {compose_service="nginx"}| regexp
-    "\"\\w+ .* HTTP\\/\\d\\.\\d\" \\d{3} \\d{1,} (?P<value>\\d{1,}.\\d{1,})"
-    [1m]
-  )
+quantile_over_time(0.99,{compose_project="logql"}
+  | pattern `<ip> - - [<_>] "<method> <path> HTTP<_>" <status> <_> <latency> ` | latency != "" | unwrap latency [$__interval]) by (compose_project)
 ```
