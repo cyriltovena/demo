@@ -15,6 +15,8 @@ docker-compose up
 open http://localhost:3000
 ```
 
+The grafana user/password is admin/admin
+
 ## Try
 
 Queries to try
